@@ -2,18 +2,18 @@
 
 user=${USER:-root}
 home=${HOME:-/home/$user}
-uid=${UID:-1000}		
+uid=${UID:-1000}
 gid=${uid:-1000}
 thisdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 tmpdir=$(mktemp -d)
 
 echo "FROM ubuntu:14.04
 
-RUN mkdir -p ${home} \\		
- && echo \"${user}:x:${uid}:${gid}:${user},,,:${home}:/bin/bash\" >> /etc/passwd \\		
- && echo \"${user}:x:${uid}:\"                                    >> /etc/group \\		
- && echo \"${user} ALL=(ALL) NOPASSWD: ALL\"                       > /etc/sudoers.d/${user} \\		
- && chmod 0440 /etc/sudoers.d/${user} \\		
+RUN mkdir -p ${home} \\
+ && echo \"${user}:x:${uid}:${gid}:${user},,,:${home}:/bin/bash\" >> /etc/passwd \\
+ && echo \"${user}:x:${uid}:\"                                    >> /etc/group \\
+ && echo \"${user} ALL=(ALL) NOPASSWD: ALL\"                       > /etc/sudoers.d/${user} \\
+ && chmod 0440 /etc/sudoers.d/${user} \\
  && chown ${uid}:${gid} -R ${home}
 
 RUN apt-get update \\
@@ -43,8 +43,16 @@ rm -rf $tmpdir
 # which handles xfce global (the same) hotkeys outside the containr
 # "/usr/share/freerdp/action.sh" is hardcoded in FreeRDP
 
-# this may be run under Java's `Runtime.getRuntime.exec`, in this case no `docker -t` nor `docker -t` start (TODO: detect it)
-docker run  -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
-  -v ${thisdir}/freerdp-xfce-hotkeys.sh:/usr/share/freerdp/action.sh:ro \
-  --memory=1000mb \
-  --rm freerdp
+# this may be run under Java's `Runtime.getRuntime.exec`, in this case no `docker -t` nor `docker -t` start
+stty -a >/dev/nul
+if [ $? -eq 0 ]; then
+  docker run -ti -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -v ${thisdir}/freerdp-xfce-hotkeys.sh:/usr/share/freerdp/action.sh:ro \
+    --memory=1000mb \
+    --rm freerdp
+else
+  docker run  -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -v ${thisdir}/freerdp-xfce-hotkeys.sh:/usr/share/freerdp/action.sh:ro \
+    --memory=1000mb \
+    --rm freerdp
+fi
