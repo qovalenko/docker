@@ -28,12 +28,8 @@ RUN git clone https://github.com/FreeRDP/FreeRDP.git \\
  && cmake -DCMAKE_BUILD_TYPE=Debug -DWITH_DEBUG_CLIPRDR=ON -DWITH_LIBSYSTEMD=OFF -DWITH_WAYLAND=OFF -DWITH_MANPAGES=OFF -DWITH_SSE2=ON . \\
  && make install
 
-# hotkeys pressed when xfreerdp run fullscreen and captures focus handled by the same script which is set to handle (actually the same) xfce global hotkeys  
-RUN apt-get -y install wmctrl gawk \\
- && mkdir -p /usr/share/freerdp \\
- && echo '#!/bin/bash'                           > /usr/share/freerdp/action.sh \\
- && echo 'exec /freerdp-xfce-hotkeys.sh \"\$@\"' >> /usr/share/freerdp/action.sh \\
- && chmod +x /usr/share/freerdp/action.sh
+# freerdp-xfce-hotkeys.sh needs this
+RUN apt-get -y install wmctrl gawk
 
 USER ${user}
 ENV HOME ${home}
@@ -43,8 +39,12 @@ CMD /usr/local/bin/xfreerdp $*
 docker build -t freerdp $tmpdir
 rm -rf $tmpdir
 
+# hotkeys pressed when xfreerdp run fullscreen handled by the same script
+# which handles xfce global (the same) hotkeys outside the containr
+# "/usr/share/freerdp/action.sh" is hardcoded in FreeRDP
+
 # this may be run under Java's `Runtime.getRuntime.exec`, in this case no `docker -t` nor `docker -t` start (TODO: detect it)
 docker run  -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
-  -v ${thisdir}/freerdp-xfce-hotkeys.sh:/freerdp-xfce-hotkeys.sh:ro \
+  -v ${thisdir}/freerdp-xfce-hotkeys.sh:/usr/share/freerdp/action.sh:ro \
   --memory=1000mb \
   --rm freerdp
