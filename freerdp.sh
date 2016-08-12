@@ -43,16 +43,13 @@ rm -rf $tmpdir
 # which handles xfce global (the same) hotkeys outside the containr
 # "/usr/share/freerdp/action.sh" is hardcoded in FreeRDP
 
-# this may be run under Java's `Runtime.getRuntime.exec`, in this case no `docker -t` nor `docker -t` start
-stty -a >/dev/nul
-if [ $? -eq 0 ]; then
-  docker run -ti -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
-    -v ${thisdir}/freerdp-xfce-hotkeys.sh:/usr/share/freerdp/action.sh:ro \
-    --memory=1000mb \
-    --rm freerdp
-else
-  docker run  -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
-    -v ${thisdir}/freerdp-xfce-hotkeys.sh:/usr/share/freerdp/action.sh:ro \
-    --memory=1000mb \
-    --rm freerdp
-fi
+# this may be run under Java's `Runtime.getRuntime.exec` or from XFCE menu, in this case no `docker -t` nor `docker -t` start
+ti() {
+  stty -a >/dev/null
+  if [ $? -eq 0 ]; then echo "-ti"; fi
+}
+
+docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v ${thisdir}/freerdp-xfce-hotkeys.sh:/usr/share/freerdp/action.sh:ro \
+  --memory=1000mb \
+  --rm freerdp
