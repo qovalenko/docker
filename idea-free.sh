@@ -11,11 +11,14 @@ echo "FROM ubuntu:14.04
 
 # fonts for low-dpi screens
 RUN apt-get update \\
- && apt-get -y install python-software-properties software-properties-common \\
+ && apt-get -y install software-properties-common \\
  && add-apt-repository -y ppa:no1wantdthisname/ppa \\
  && apt-get update; apt-get -y upgrade \\
  && apt-get -y install fontconfig-infinality \\
- && sed -i -r 's|<bool>false</bool>|<bool>true</bool>|g'        /etc/fonts/infinality/conf.src/50-base-rendering-win98.conf \\
+ && apt-get -y purge software-properties-common \\
+ && apt-get -y autoremove \\
+ && perl -pi.old -e 's/false/true/ if /<edit name=.antialias./ ... /<.edit/' /etc/fonts/infinality/conf.src/50-base-rendering-win98.conf \\
+ && perl -pi.old -e 's/<string>DejaVu Sans<.string>//g'                      /etc/fonts/infinality/conf.d/41-repl-os-win.conf \\
  && sed -i -r 's|USE_STYLE=\"DEFAULT\"|USE_STYLE=\"WINDOWS\"|g' /etc/profile.d/infinality-settings.sh \\
  && /etc/fonts/infinality/infctl.sh setstyle win98
 
