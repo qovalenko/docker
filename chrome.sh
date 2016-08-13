@@ -38,7 +38,14 @@ RUN mkdir -p ${home} \\
 USER ${user}
 ENV HOME ${home}
 
-CMD /usr/bin/google-chrome --user-data-dir=${home}/udd --disable-translate --no-default-browser-check --no-first-run $(escape_me "$@")
+CMD /usr/bin/google-chrome --user-data-dir=${home}/udd \
+  --disable-translate \
+  --disable-notifications \
+  --disable-sync \
+  --disable-smooth-scrolling \
+  --no-default-browser-check \
+  --no-first-run \
+  $(escape_me "$@")
 " > $tmpdir/Dockerfile
 
 docker build -t $image $tmpdir
