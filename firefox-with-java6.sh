@@ -3,6 +3,7 @@
 # Old Firefox with JRE 6 for managing HP servers
 # https://www.reddit.com/r/linuxquestions/comments/2oebqn/problems_using_ilo_java_interface_with_java_7_and/
 
+image=$(basename $0 .sh)
 user=${USER:-root}
 home=${HOME:-/home/$user}
 uid=${UID:-1000}
@@ -36,7 +37,7 @@ ENV HOME ${home}
 CMD /firefox/firefox --no-remote $*
 " > $tmpdir/Dockerfile
 
-docker build -t firefox-with-java6 $tmpdir
+docker build -t $image $tmpdir
 rm -rf $tmpdir
 
 
@@ -47,4 +48,4 @@ ti() {
 }
 
 docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority -v /tmp/.X11-unix:/tmp/.X11-unix \
-  --rm firefox-with-java6
+  --rm $image

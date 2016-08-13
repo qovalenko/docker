@@ -1,5 +1,6 @@
 #!/bin/bash
 
+image=$(basename $0 .sh)
 user=${USER:-root}
 home=${HOME:-/home/$user}
 uid=${UID:-1000}
@@ -36,7 +37,7 @@ ENV HOME ${home}
 CMD /usr/local/bin/xfreerdp $*
 " > $tmpdir/Dockerfile
 
-docker build -t freerdp $tmpdir
+docker build -t $image $tmpdir
 rm -rf $tmpdir
 
 # hotkeys pressed when xfreerdp run fullscreen handled by the same script
@@ -52,4 +53,4 @@ ti() {
 docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
   -v ${thisdir}/freerdp-xfce-hotkeys.sh:/usr/share/freerdp/action.sh:ro \
   --memory=1000mb \
-  --rm freerdp
+  --rm $image

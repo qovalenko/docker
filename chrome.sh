@@ -1,5 +1,6 @@
 #!/bin/bash
 
+image=$(basename $0 .sh)
 user=${USER:-root}
 home=${HOME:-/home/$user}
 uid=${UID:-1000}
@@ -35,7 +36,7 @@ ENV HOME ${home}
 CMD /usr/bin/google-chrome --user-data-dir=${home}/udd --disable-translate --no-default-browser-check --no-first-run $*
 " > $tmpdir/Dockerfile
 
-docker build -t chrome $tmpdir
+docker build -t $image $tmpdir
 rm -rf $tmpdir
 
 # this may be run under Java's `Runtime.getRuntime.exec` or from XFCE menu, in this case no `docker -t` nor `docker -t` start
@@ -48,7 +49,7 @@ ti() {
 # X11 requires /root/.Xauthority, Xrdp requires /tmp/X11-unix
 docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority -v /tmp/.X11-unix:/tmp/.X11-unix \
   --memory=1000mb \
-  --rm chrome
+  --rm $image
 
 # multimedia
 #docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority -v /tmp/.X11-unix:/tmp/.X11-unix \
@@ -56,12 +57,12 @@ docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority 
 #  -v /dev/snd:/dev/snd \
 #  --privileged \
 #  --memory=4000mb \
-#  --rm chrome
+#  --rm $image
 
 # start new session every time, the state is preserved upon chrome exit and can be resumed by 'docker start <some_random_name>';
 #docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority -v /tmp/.X11-unix:/tmp/.X11-unix \
-#  chrome
+#  $image
 
 # start named session, which can be resumed by 'docker start nameff'; second start would fail
 #docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority -v /tmp/.X11-unix:/tmp/.X11-unix \
-#  --name nameff chrome
+#  --name nameff $image

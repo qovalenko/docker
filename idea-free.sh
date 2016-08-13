@@ -1,5 +1,6 @@
 #!/bin/bash
 
+image=$(basename $0 .sh)
 user=${USER:-root}
 home=${HOME:-/home/$user}
 uid=${UID:-1000}
@@ -36,7 +37,7 @@ ENV HOME ${home}
 CMD /idea-*/bin/idea.sh
 " > $tmpdir/Dockerfile
 
-docker build -t idea-free $tmpdir
+docker build -t $image $tmpdir
 rm -rf $tmpdir
 
 # this may be run under Java's `Runtime.getRuntime.exec` or from XFCE menu, in this case no `docker -t` nor `docker -t` start
@@ -47,4 +48,4 @@ ti() {
 
 docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority -v /tmp/.X11-unix:/tmp/.X11-unix \
   --memory=2000mb \
-  --rm idea-free
+  --rm $image
