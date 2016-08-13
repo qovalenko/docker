@@ -9,13 +9,6 @@ tmpdir=$(mktemp -d)
 
 echo "FROM ubuntu:14.04
 
-RUN mkdir -p ${home} \\
- && echo \"${user}:x:${uid}:${gid}:${user},,,:${home}:/bin/bash\" >> /etc/passwd \\
- && echo \"${user}:x:${uid}:\"                                    >> /etc/group \\
- && echo \"${user} ALL=(ALL) NOPASSWD: ALL\"                       > /etc/sudoers.d/${user} \\
- && chmod 0440 /etc/sudoers.d/${user} \\
- && chown ${uid}:${gid} -R ${home}
-
 # fonts for low-dpi screens
 RUN apt-get update \\
  && apt-get -y install python-software-properties software-properties-common \\
@@ -31,8 +24,16 @@ RUN apt-get -y install wget libpango1.0-0 libxss1 fonts-liberation libappindicat
  && dpkg -i google-chrome-stable_current_amd64.deb \\
  && rm -f google-chrome-stable_current_amd64.deb
 
+RUN mkdir -p ${home} \\
+ && chown ${uid}:${gid} -R ${home} \\
+ && echo \"${user}:x:${uid}:${gid}:${user},,,:${home}:/bin/bash\" >> /etc/passwd \\
+ && echo \"${user}:x:${uid}:\"                                    >> /etc/group \\
+ && [ -d /etc/sudoers.d ] || (apt-get update && apt-get -y install sudo) \\
+ && echo \"${user} ALL=(ALL) NOPASSWD: ALL\"                       > /etc/sudoers.d/${user} \\
+ && chmod 0440 /etc/sudoers.d/${user}
 USER ${user}
 ENV HOME ${home}
+
 CMD /usr/bin/google-chrome --user-data-dir=${home}/udd --disable-translate --no-default-browser-check --no-first-run $*
 " > $tmpdir/Dockerfile
 

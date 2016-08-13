@@ -9,17 +9,15 @@ tmpdir=$(mktemp -d)
 
 echo "FROM ubuntu:16.04
 
-RUN apt-get update && apt-get -y install sudo
-
-RUN mkdir -p ${home} \\
- && echo \"${user}:x:${uid}:${gid}:${user},,,:${home}:/bin/bash\" >> /etc/passwd \\
- && echo \"${user}:x:${uid}:\"                                    >> /etc/group \\
- && echo \"${user} ALL=(ALL) NOPASSWD: ALL\"                       > /etc/sudoers.d/${user} \\
- && chmod 0440 /etc/sudoers.d/${user} \\
- && chown ${uid}:${gid} -R ${home}
-
 RUN apt-get update && apt-get -y install perl libwww-perl
 
+RUN mkdir -p ${home} \\
+ && chown ${uid}:${gid} -R ${home} \\
+ && echo \"${user}:x:${uid}:${gid}:${user},,,:${home}:/bin/bash\" >> /etc/passwd \\
+ && echo \"${user}:x:${uid}:\"                                    >> /etc/group \\
+ && [ -d /etc/sudoers.d ] || (apt-get update && apt-get -y install sudo) \\
+ && echo \"${user} ALL=(ALL) NOPASSWD: ALL\"                       > /etc/sudoers.d/${user} \\
+ && chmod 0440 /etc/sudoers.d/${user}
 USER ${user}
 ENV HOME ${home}
 

@@ -12,13 +12,6 @@ tmpdir=$(mktemp -d)
 
 echo "FROM ubuntu:10.04
 
-RUN mkdir -p ${home} \\
- && echo \"${user}:x:${uid}:${gid}:${user},,,:${home}:/bin/bash\" >> /etc/passwd \\
- && echo \"${user}:x:${uid}:\"                                    >> /etc/group \\
- && echo \"${user} ALL=(ALL) NOPASSWD: ALL\"                       > /etc/sudoers.d/${user} \\
- && chmod 0440 /etc/sudoers.d/${user} \\
- && chown ${uid}:${gid} -R ${home}
-
 RUN /bin/sed -i -r 's#archive#old-releases#g' /etc/apt/sources.list \\
  && apt-get update \\
  && apt-get -y install ia32-libs xterm wget
@@ -32,8 +25,16 @@ RUN wget --no-check-certificate https://ftp.mozilla.org/pub/firefox/releases/3.6
  && mkdir -p /usr/lib/mozilla/plugins \\
  && ln -s /jre1.6.0_45/lib/i386/libnpjp2.so /usr/lib/mozilla/plugins
 
+RUN mkdir -p ${home} \\
+ && chown ${uid}:${gid} -R ${home} \\
+ && echo \"${user}:x:${uid}:${gid}:${user},,,:${home}:/bin/bash\" >> /etc/passwd \\
+ && echo \"${user}:x:${uid}:\"                                    >> /etc/group \\
+ && [ -d /etc/sudoers.d ] || (apt-get update && apt-get -y install sudo) \\
+ && echo \"${user} ALL=(ALL) NOPASSWD: ALL\"                       > /etc/sudoers.d/${user} \\
+ && chmod 0440 /etc/sudoers.d/${user}
 USER ${user}
 ENV HOME ${home}
+
 CMD /firefox/firefox --no-remote $*
 " > $tmpdir/Dockerfile
 

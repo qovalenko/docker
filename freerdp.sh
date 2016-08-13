@@ -10,13 +10,6 @@ tmpdir=$(mktemp -d)
 
 echo "FROM ubuntu:14.04
 
-RUN mkdir -p ${home} \\
- && echo \"${user}:x:${uid}:${gid}:${user},,,:${home}:/bin/bash\" >> /etc/passwd \\
- && echo \"${user}:x:${uid}:\"                                    >> /etc/group \\
- && echo \"${user} ALL=(ALL) NOPASSWD: ALL\"                       > /etc/sudoers.d/${user} \\
- && chmod 0440 /etc/sudoers.d/${user} \\
- && chown ${uid}:${gid} -R ${home}
-
 RUN apt-get update \\
  && apt-get -y install build-essential git-core cmake xsltproc libssl-dev libx11-dev libxext-dev libxinerama-dev \\
             libxcursor-dev libxdamage-dev libxv-dev libxkbfile-dev libasound2-dev libcups2-dev libxml2 libxml2-dev \\
@@ -32,8 +25,16 @@ RUN git clone https://github.com/FreeRDP/FreeRDP.git \\
 # freerdp-xfce-hotkeys.sh needs this
 RUN apt-get -y install wmctrl gawk
 
+RUN mkdir -p ${home} \\
+ && chown ${uid}:${gid} -R ${home} \\
+ && echo \"${user}:x:${uid}:${gid}:${user},,,:${home}:/bin/bash\" >> /etc/passwd \\
+ && echo \"${user}:x:${uid}:\"                                    >> /etc/group \\
+ && [ -d /etc/sudoers.d ] || (apt-get update && apt-get -y install sudo) \\
+ && echo \"${user} ALL=(ALL) NOPASSWD: ALL\"                       > /etc/sudoers.d/${user} \\
+ && chmod 0440 /etc/sudoers.d/${user}
 USER ${user}
 ENV HOME ${home}
+
 CMD /usr/local/bin/xfreerdp $*
 " > $tmpdir/Dockerfile
 
