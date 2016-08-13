@@ -10,6 +10,10 @@ uid=${UID:-1000}
 gid=${uid:-1000}
 tmpdir=$(mktemp -d)
 
+escape_me() {
+  perl -e 'print(join(" ", map { my $x=$_; s/\\/\\\\/g; s/\"/\\\"/g; s/`/\\`/g; s/\$/\\\$/g; s/!/\"\x27!\x27\"/g; ($x ne $_) || /\s/ ? "\"$_\"" : $_ } @ARGV))' "$@"
+}
+
 echo "FROM ubuntu:10.04
 
 RUN /bin/sed -i -r 's#archive#old-releases#g' /etc/apt/sources.list \\
@@ -35,7 +39,7 @@ RUN mkdir -p ${home} \\
 USER ${user}
 ENV HOME ${home}
 
-CMD /firefox/firefox --no-remote $*
+CMD /firefox/firefox --no-remote $(escape_me "$@")
 " > $tmpdir/Dockerfile
 
 docker build -t $image $tmpdir

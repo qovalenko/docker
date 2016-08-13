@@ -7,6 +7,10 @@ uid=${UID:-1000}
 gid=${uid:-1000}
 tmpdir=$(mktemp -d)
 
+escape_me() {
+  perl -e 'print(join(" ", map { my $x=$_; s/\\/\\\\/g; s/\"/\\\"/g; s/`/\\`/g; s/\$/\\\$/g; s/!/\"\x27!\x27\"/g; ($x ne $_) || /\s/ ? "\"$_\"" : $_ } @ARGV))' "$@"
+}
+
 echo "FROM ubuntu:14.04
 
 RUN apt-get update && apt-get -y install perl libwww-perl
@@ -21,14 +25,15 @@ RUN mkdir -p ${home} \\
 USER ${user}
 ENV HOME ${home}
 
-CMD cd $(pwd); $*
+CMD cd $(escape_me "$(pwd)") \\
+ && $(escape_me "$@")
 " > $tmpdir/Dockerfile
 
 docker build -t $image $tmpdir
 rm -rf $tmpdir
 
 docker run -ti -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
-  -v $(pwd):$(pwd) \
+  -v "$(pwd)":"$(pwd)" \
   -v ${home}/.m2:${home}/.m2 \
   -v /opt:/opt:ro \
   --memory=1000mb \

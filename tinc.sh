@@ -11,7 +11,7 @@ echo "FROM ubuntu:16.04
 
 RUN apt-get update && apt-get -y install iputils-ping net-tools mtr-tiny tinc
 
-CMD (nohup tincd -d3 -D -n dmz &); (nohup tincd -d3 -D -n lan &); $*
+CMD (nohup tincd -d3 -D -n dmz &); (nohup tincd -d3 -D -n lan &); /bin/bash
 " > $tmpdir/Dockerfile
 
 docker build -t $image $tmpdir
@@ -21,6 +21,5 @@ docker run -ti -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro
   --cap-add=NET_ADMIN \
   --device /dev/net/tun:/dev/net/tun \
   -v /etc/tinc:/etc/tinc:ro \
-  --memory=1000mb \
   --rm $image
 

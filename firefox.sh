@@ -7,6 +7,10 @@ uid=${UID:-1000}
 gid=${uid:-1000}
 tmpdir=$(mktemp -d)
 
+escape_me() {
+  perl -e 'print(join(" ", map { my $x=$_; s/\\/\\\\/g; s/\"/\\\"/g; s/`/\\`/g; s/\$/\\\$/g; s/!/\"\x27!\x27\"/g; ($x ne $_) || /\s/ ? "\"$_\"" : $_ } @ARGV))' "$@"
+}
+
 echo "FROM ubuntu:14.04
 
 # fonts for low-dpi screens
@@ -31,7 +35,7 @@ RUN mkdir -p ${home} \\
 USER ${user}
 ENV HOME ${home}
 
-CMD /usr/bin/firefox --no-remote $*
+CMD /usr/bin/firefox --no-remote $(escape_me "$@")
 " > $tmpdir/Dockerfile
 
 docker build -t $image $tmpdir
