@@ -46,6 +46,6 @@ ti() {
   if [ $? -eq 0 ]; then echo "-ti"; fi
 }
 
-docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority -v /tmp/.X11-unix:/tmp/.X11-unix \
+docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
   --memory=2000mb \
   --rm $image
