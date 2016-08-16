@@ -13,7 +13,8 @@ escape_me() {
 
 echo "FROM ubuntu:16.04
 
-RUN apt-get update && apt-get -y install perl libwww-perl
+RUN apt-get update \\
+ && apt-get -y install perl libwww-perl wget curl git mercurial build-essential scons protobuf-compiler libprotobuf-dev
 
 RUN mkdir -p ${home} \\
  && chown ${uid}:${gid} -R ${home} \\
@@ -25,16 +26,19 @@ RUN mkdir -p ${home} \\
 USER ${user}
 ENV HOME ${home}
 
-CMD cd $(escape_me "$(pwd)") \\
- && $(escape_me "$@")
+CMD cd $(escape_me "$(pwd)"); \\
+    $(escape_me "$@")
 " > $tmpdir/Dockerfile
 
 docker build -t $image $tmpdir
 rm -rf $tmpdir
 
-docker run -ti -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
+docker run -ti -e DISPLAY --net=host \
+  -v $HOME/.bashrc:${home}/.bashrc:ro \
+  -v $HOME/.Xauthority:${home}/.Xauthority:ro \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
   -v "$(pwd)":"$(pwd)" \
   -v ${home}/.m2:${home}/.m2 \
   -v /opt:/opt:ro \
-  --memory=1000mb \
+  --memory=4000mb \
   --rm $image
