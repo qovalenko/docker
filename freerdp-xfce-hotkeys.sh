@@ -25,7 +25,7 @@ run() {
                                   /t:"FreeRDP:$name"                        \
                                   +grab-keyboard                            \
                                   +clipboard                                \
-                                  +bitmap-cache +offscreen-cache -glyph-cache +decorations    \
+                                  +bitmap-cache -offscreen-cache -glyph-cache +decorations    \
                                   +async-update +async-input +async-transport +async-channels \
                                   /cert-ignore                              \
                                   /drive:Downloads,/home/user/Downloads     \
