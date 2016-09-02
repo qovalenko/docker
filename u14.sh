@@ -40,5 +40,8 @@ docker run -ti -e DISPLAY --net=host \
   -v "$(pwd)":"$(pwd)" \
   -v ${home}/.m2:${home}/.m2 \
   -v /opt:/opt:ro \
+  -v /dev/dri:/dev/dri \
+  -v /dev/snd:/dev/snd \
+  --privileged \
   --memory=4000mb \
   --rm $image
