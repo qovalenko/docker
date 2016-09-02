@@ -101,12 +101,12 @@ switch_to_prev_rdp() {
   local index=-1
   local i=0
   local target_winid=""
-  for winid in $rdp_windows; do 
+  for winid in $rdp_windows; do
     if [ $i == $((index + 1)) ]; then target_winid=$winid; fi
     if [ "$active_window" == "$winid" ]; then index=$i; fi
     i=$((i + 1))
   done
-  #>&2 echo "p index=$index i=$i target_winid=$target_winid" 
+  #>&2 echo "p index=$index i=$i target_winid=$target_winid"
   #if [ $((index + 1)) == $i ]; then
   #  tile_rdp_windows
   #  wmctrl -s 0
@@ -121,18 +121,38 @@ switch_to_next_rdp() {
   local index=-1
   local i=0
   local target_winid=""
-  for winid in $rdp_windows; do 
+  for winid in $rdp_windows; do
     if [ $i == $((index + 1)) ]; then target_winid=$winid; fi
     if [ "$active_window" == "$winid" ]; then index=$i; fi
     i=$((i + 1))
   done
-  #>&2 echo "n index=$index i=$i target_winid=$target_winid" 
+  #>&2 echo "n index=$index i=$i target_winid=$target_winid"
   #if [ $((index + 1)) == $i ]; then
   #  tile_rdp_windows
   #  wmctrl -s 0
   #else
     switch_to $target_winid
   #fi
+}
+
+switch_to_next_rdp_or_desktop() {
+  local active_window=$(wmctrl -a :ACTIVE: -v 2>&1 | tail -1 | gawk '{print $3}')
+  local rdp_windows=$(wmctrl -l | grep ' FreeRDP:' | sort -k4 | gawk '{print $1}')
+  local index=-1
+  local i=0
+  local target_winid=""
+  for winid in $rdp_windows; do
+    if [ $i == $((index + 1)) ]; then target_winid=$winid; fi
+    if [ "$active_window" == "$winid" ]; then index=$i; fi
+    i=$((i + 1))
+  done
+  #>&2 echo "n index=$index i=$i target_winid=$target_winid"
+  if [ $((index + 1)) == $i ]; then
+    tile_rdp_windows
+    wmctrl -s 0
+  else
+    switch_to $target_winid
+  fi
 }
 
 sinstall_xfce_hotkeys() {
@@ -146,6 +166,10 @@ sinstall_xfce_hotkeys() {
   # # # # <property name="Muhenkan" type="string" value="${thisdir}/freerdp-xfce-hotkeys.sh key Muhenkan"/>
   # # # # <property name="Henkan_Mode" type="string" value="${thisdir}/freerdp-xfce-hotkeys.sh key Henkan_Mode"/>
   # # # # <property name="Hiragana_Katakana" type="string" value="${thisdir}/freerdp-xfce-hotkeys.sh key Hiragana_Katakana"/>
+  # # # # <property name="less" type="string" value="${thisdir}/freerdp-xfce-hotkeys.sh key less"/> <!-- french keyboard only extra key -->
+  # # # # <property name="XF86AudioPrev" type="string" value="${thisdir}/freerdp-xfce-hotkeys.sh key XF86AudioPrev"/>
+  # # # # <property name="XF86AudioNext" type="string" value="${thisdir}/freerdp-xfce-hotkeys.sh key XF86AudioNext"/>
+  # # # # <property name="XF86AudioStop" type="string" value="${thisdir}/freerdp-xfce-hotkeys.sh key XF86AudioStop"/>
 }
 
 if [ "$1" == "switch_to_or_run" ]; then
@@ -157,6 +181,7 @@ elif [ "$1" == "debug-tile" ]; then
 elif [ "$1" == "key" ]; then
   if [ "$2" == "" ]; then
 #   echo "Ctrl+Alt+Break"
+    echo "less"
     echo "Muhenkan"
     echo "Henkan_Mode"
     echo "Hiragana_Katakana"
@@ -169,6 +194,7 @@ elif [ "$1" == "key" ]; then
     # todo:toggle fullscreen of active rdp-window
     echo "key-local"
 # elif [ "$2" == "XF86WakeUp"                                   ]; then tile_rdp_windows;   wmctrl -s 1; /usr/bin/xfce4-popup-whiskermenu;                                 echo "key-local"
+  elif [ "$2" == "XF86AudioPrev" -o "$2" == "less"              ]; then switch_to_next_rdp_or_desktop;                                                                     echo "key-local"
   elif [ "$2" == "XF86AudioPrev" -o "$2" == "Muhenkan"          ]; then switch_to_prev_rdp;                                                                                echo "key-local"
   elif [ "$2" == "XF86AudioNext" -o "$2" == "Henkan_Mode"       ]; then switch_to_next_rdp;                                                                                echo "key-local"
   elif [ "$2" == "XF86AudioStop" -o "$2" == "Hiragana_Katakana" ]; then tile_rdp_windows;   if [ "$(wmctrl -d | grep '0  \*')" ]; then wmctrl -s 1; else wmctrl -s 0; fi;  echo "key-local"
