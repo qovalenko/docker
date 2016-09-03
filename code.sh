@@ -42,8 +42,8 @@ RUN mkdir -p ${home} \\
 USER ${user}
 ENV HOME ${home}
 
-CMD cd $(pwd); /bin/bash
-#CMD cd $(pwd)/black-screen; npm start
+CMD [ -d ~/vscode/scripts/code.sh ] || (cd ~; git clone https://github.com/microsoft/vscode; cd ~/vscode; ./scripts/npm.sh install --arch=x64) \\
+ && cd $(pwd); ~/vscode/scripts/code.sh .
 " > $tmpdir/Dockerfile
 
 docker build -t $image $tmpdir
@@ -52,6 +52,7 @@ rm -rf $tmpdir
 docker run -ti -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
   -v $(pwd):$(pwd) \
   -v ${home}/node_modules:${home}/node_modules:ro \
+  -v ${home}/vscode:${home}/vscode \
   -v /opt:/opt:ro \
   --memory=1000mb \
   --rm $image
