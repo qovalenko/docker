@@ -7,6 +7,10 @@ uid=${UID:-1000}
 gid=${uid:-1000}
 tmpdir=$(mktemp -d)
 
+escape_me() {
+  perl -e 'print(join(" ", map { my $x=$_; s/\\/\\\\/g; s/\"/\\\"/g; s/`/\\`/g; s/\$/\\\$/g; s/!/\"\x27!\x27\"/g; ($x ne $_) || /\s/ ? "\"$_\"" : $_ } @ARGV))' "$@"
+}
+
 echo "FROM ubuntu:16.04
 
 # https://github.com/nodesource/docker-node/blob/master/base/ubuntu/xenial/Dockerfile
@@ -42,17 +46,24 @@ RUN mkdir -p ${home} \\
 USER ${user}
 ENV HOME ${home}
 
-CMD [ -d ~/vscode/scripts/code.sh ] || (cd ~; git clone https://github.com/microsoft/vscode; cd ~/vscode; ./scripts/npm.sh install --arch=x64) \\
- && cd $(pwd); ~/vscode/scripts/code.sh .
+CMD [ -f ~/vscode/scripts/code.sh ] || (cd ~; git clone https://github.com/microsoft/vscode; cd ~/vscode; ./scripts/npm.sh install --arch=x64) \\
+ && cd $(escape_me "$(pwd)"); \\
+    ~/vscode/scripts/code.sh $(escape_me "$@")
+
 " > $tmpdir/Dockerfile
 
 docker build -t $image $tmpdir
 rm -rf $tmpdir
 
-docker run -ti -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
-  -v $(pwd):$(pwd) \
+docker run -ti -e DISPLAY --net=host \
+  -v $HOME/.Xauthority:${home}/.Xauthority:ro \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v "$(pwd)":"$(pwd)" \
   -v ${home}/node_modules:${home}/node_modules:ro \
   -v ${home}/vscode:${home}/vscode \
   -v /opt:/opt:ro \
+  -v /dev/dri:/dev/dri \
+  -v /dev/snd:/dev/snd \
+  --privileged \
   --memory=1000mb \
   --rm $image
