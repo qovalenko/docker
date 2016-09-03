@@ -62,17 +62,17 @@ ti() {
 
 # start tmp session, firefox: second run will create a new tab in it; chrome: start second container
 # X11 requires /root/.Xauthority, Xrdp requires /tmp/X11-unix
-docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
-  --memory=1000mb \
-  --rm $image
+#docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
+#  --memory=1000mb \
+#  --rm $image
 
 # multimedia
-#docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
-#  -v /dev/dri:/dev/dri \
-#  -v /dev/snd:/dev/snd \
-#  --privileged \
-#  --memory=4000mb \
-#  --rm $image
+docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v /dev/dri:/dev/dri \
+  -v /dev/snd:/dev/snd \
+  --privileged \
+  --memory=2000mb \
+  --rm $image
 
 # start new session every time, the state is preserved upon chrome exit and can be resumed by 'docker start <some_random_name>';
 #docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \

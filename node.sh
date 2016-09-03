@@ -16,6 +16,7 @@ echo "FROM ubuntu:16.04
 # https://github.com/nodesource/docker-node/blob/master/base/ubuntu/xenial/Dockerfile
 RUN apt-get update \
  && apt-get install -y --force-yes --no-install-recommends \
+      apt-utils \
       apt-transport-https \
       ssh-client \
       build-essential \
@@ -34,7 +35,7 @@ RUN curl https://deb.nodesource.com/node_5.x/pool/main/n/nodejs/nodejs_5.12.0-1n
  && rm node.deb
 
 # for electron
-RUN apt-get install -y libgtk2.0-dev libxtst6 libxss1 libgconf-2-4 libnss3 libasound2 libnotify4
+RUN apt-get install -y libgtk2.0-dev libxtst6 libxss1 libgconf-2-4 libnss3 libasound2 libnotify4 dbus-x11 xdg-utils
 
 RUN mkdir -p ${home} \\
  && chown ${uid}:${gid} -R ${home} \\
