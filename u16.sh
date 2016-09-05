@@ -14,7 +14,7 @@ escape_me() {
 echo "FROM ubuntu:16.04
 
 RUN apt-get update \\
- && apt-get -y install perl libwww-perl wget curl git mercurial build-essential scons protobuf-compiler libprotobuf-dev
+ && apt-get -y install apt-utils perl libwww-perl wget curl git mercurial build-essential scons protobuf-compiler libprotobuf-dev
 
 RUN mkdir -p ${home} \\
  && chown ${uid}:${gid} -R ${home} \\
