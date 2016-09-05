@@ -155,8 +155,9 @@ switch_to_next_rdp_or_desktop() {
   fi
 }
 
-sinstall_xfce_hotkeys() {
+install_xfce_hotkeys() {
   # TODO: how to ensure XML entries from bash?
+  # TODO?: "xfconf-query -c xfce4-keyboard-shortcuts -l -v"
   local thisdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
   # FILE: $HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml
@@ -166,10 +167,14 @@ sinstall_xfce_hotkeys() {
   # # # # <property name="Muhenkan" type="string" value="${thisdir}/freerdp-xfce-hotkeys.sh key Muhenkan"/>
   # # # # <property name="Henkan_Mode" type="string" value="${thisdir}/freerdp-xfce-hotkeys.sh key Henkan_Mode"/>
   # # # # <property name="Hiragana_Katakana" type="string" value="${thisdir}/freerdp-xfce-hotkeys.sh key Hiragana_Katakana"/>
-  # # # # <property name="less" type="string" value="${thisdir}/freerdp-xfce-hotkeys.sh key less"/> <!-- french keyboard only extra key -->
+  # # # # <property name="Katakana" type="string" value="${thisdir}/freerdp-xfce-hotkeys.sh key Katakana"/> <!--french keyboard only extra key is 'keycode 94 = less ...' remaped as Katakana-->
   # # # # <property name="XF86AudioPrev" type="string" value="${thisdir}/freerdp-xfce-hotkeys.sh key XF86AudioPrev"/>
   # # # # <property name="XF86AudioNext" type="string" value="${thisdir}/freerdp-xfce-hotkeys.sh key XF86AudioNext"/>
   # # # # <property name="XF86AudioStop" type="string" value="${thisdir}/freerdp-xfce-hotkeys.sh key XF86AudioStop"/>
+
+  echo 'keycode 94 = Katakana' > ~/.Xmodmap
+  xmodmap ~/.Xmodmap
+
 }
 
 if [ "$1" == "switch_to_or_run" ]; then
@@ -181,7 +186,7 @@ elif [ "$1" == "debug-tile" ]; then
 elif [ "$1" == "key" ]; then
   if [ "$2" == "" ]; then
 #   echo "Ctrl+Alt+Break"
-    echo "less"
+    echo "Katakana"
     echo "Muhenkan"
     echo "Henkan_Mode"
     echo "Hiragana_Katakana"
@@ -194,7 +199,7 @@ elif [ "$1" == "key" ]; then
     # todo:toggle fullscreen of active rdp-window
     echo "key-local"
 # elif [ "$2" == "XF86WakeUp"                                   ]; then tile_rdp_windows;   wmctrl -s 1; /usr/bin/xfce4-popup-whiskermenu;                                 echo "key-local"
-  elif [ "$2" == "XF86AudioPrev" -o "$2" == "less"              ]; then switch_to_next_rdp_or_desktop;                                                                     echo "key-local"
+  elif [ "$2" == "XF86AudioPrev" -o "$2" == "Katakana"          ]; then switch_to_next_rdp_or_desktop;                                                                     echo "key-local"
   elif [ "$2" == "XF86AudioPrev" -o "$2" == "Muhenkan"          ]; then switch_to_prev_rdp;                                                                                echo "key-local"
   elif [ "$2" == "XF86AudioNext" -o "$2" == "Henkan_Mode"       ]; then switch_to_next_rdp;                                                                                echo "key-local"
   elif [ "$2" == "XF86AudioStop" -o "$2" == "Hiragana_Katakana" ]; then tile_rdp_windows;   if [ "$(wmctrl -d | grep '0  \*')" ]; then wmctrl -s 1; else wmctrl -s 0; fi;  echo "key-local"
