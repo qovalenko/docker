@@ -19,19 +19,20 @@ run() {
   (
     # todo: clipboard issues
     # todo: +glyph-cache issues
-    # todo: +offscreen-cache issues
+    # todo: +offscreen-cache issue
+    # todo: +auto-reconnect does not works
     #WLOG_FILTER=com.freerdp.*:TRACE 
     ~/docker/freerdp.sh /v:$host /port:$port /u:$user /p:$pass    \
                                   /t:"FreeRDP:$name"                        \
                                   +grab-keyboard                            \
                                   +clipboard                                \
+                                  +auto-reconnect                           \
                                   +bitmap-cache -offscreen-cache -glyph-cache +decorations    \
                                   +async-update +async-input +async-transport +async-channels \
                                   /cert-ignore                              \
                                   /drive:Downloads,/home/user/Downloads     \
                                   /size:"${screen_width}x${screen_height}"  \
                                   /smart-sizing:600x333
-#                                  +auto-reconnect
     echo "exitcode=$?"
     # todo: show "disconnected" message
     # todo: execute again if disconnected, not killed. how to make difference? both exitcodes are "0". connect error is "131"

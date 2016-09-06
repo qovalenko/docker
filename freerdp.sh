@@ -17,8 +17,10 @@ RUN apt-get update \\
             libavutil-dev libavcodec-dev \\
  && apt-get -y install xterm
 
-RUN git clone https://github.com/FreeRDP/FreeRDP.git \\
+# use my branch with increased timeout (the problem https://github.com/FreeRDP/FreeRDP/pull/2936 still exists)
+RUN git clone https://github.com/volth/FreeRDP.git \\
  && cd /FreeRDP \\
+ && git checkout volth \\
  && cmake -DCMAKE_BUILD_TYPE=Debug -DWITH_DEBUG_CLIPRDR=ON -DWITH_LIBSYSTEMD=OFF -DWITH_WAYLAND=OFF -DWITH_MANPAGES=OFF -DWITH_SSE2=ON . \\
  && make install
 
