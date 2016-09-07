@@ -34,7 +34,6 @@ docker build -t $image $tmpdir
 rm -rf $tmpdir
 
 docker run -ti -e DISPLAY --net=host \
-  -v $HOME/.bashrc:${home}/.bashrc:ro \
   -v $HOME/.Xauthority:${home}/.Xauthority:ro \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
   -v "$(pwd)":"$(pwd)" \
