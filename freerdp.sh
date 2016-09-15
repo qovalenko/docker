@@ -47,7 +47,7 @@ rm -rf $tmpdir
 # which handles xfce global (the same) hotkeys outside the containr
 # "/usr/share/freerdp/action.sh" is hardcoded in FreeRDP
 
-# this may be run under Java's `Runtime.getRuntime.exec` or from XFCE menu, in this case no `docker -t` nor `docker -t` start
+# this may be run under Java's `Runtime.getRuntime.exec` or from XFCE menu, in this case no `docker -t` nor `docker -i` start
 ti() {
   stty -a >/dev/null
   if [ $? -eq 0 ]; then echo "-ti"; fi

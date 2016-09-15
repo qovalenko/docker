@@ -10,17 +10,18 @@ tmpdir=$(mktemp -d)
 echo "FROM ubuntu:14.04
 
 # fonts for low-dpi screens
-RUN apt-get update \\
- && apt-get -y install software-properties-common \\
- && add-apt-repository -y ppa:no1wantdthisname/ppa \\
- && apt-get update; apt-get -y upgrade \\
- && apt-get -y install fontconfig-infinality \\
- && apt-get -y purge software-properties-common \\
- && apt-get -y autoremove \\
- && perl -pi.old -e 's/false/true/ if /<edit name=.antialias./ ... /<.edit/' /etc/fonts/infinality/conf.src/50-base-rendering-win98.conf \\
- && perl -pi.old -e 's/<string>DejaVu Sans<.string>//g'                      /etc/fonts/infinality/conf.src/41-repl-os-win.conf \\
- && sed -i -r 's|USE_STYLE=\"DEFAULT\"|USE_STYLE=\"WINDOWS\"|g' /etc/profile.d/infinality-settings.sh \\
- && /etc/fonts/infinality/infctl.sh setstyle win98
+#infinality is broken https://github.com/bohoomil/fontconfig-ultimate/issues/179
+#RUN apt-get update \\
+# && apt-get -y install software-properties-common \\
+# && add-apt-repository -y ppa:no1wantdthisname/ppa \\
+# && apt-get update; apt-get -y upgrade \\
+# && apt-get -y install fontconfig-infinality \\
+# && apt-get -y purge software-properties-common \\
+# && apt-get -y autoremove \\
+# && perl -pi.old -e 's/false/true/ if /<edit name=.antialias./ ... /<.edit/' /etc/fonts/infinality/conf.src/50-base-rendering-win98.conf \\
+# && perl -pi.old -e 's/<string>DejaVu Sans<.string>//g'                      /etc/fonts/infinality/conf.src/41-repl-os-win.conf \\
+# && sed -i -r 's|USE_STYLE=\"DEFAULT\"|USE_STYLE=\"WINDOWS\"|g' /etc/profile.d/infinality-settings.sh \\
+# && /etc/fonts/infinality/infctl.sh setstyle win98
 
 RUN apt-get -y install xterm wget \\
  && wget https://download-cf.jetbrains.com/idea/ideaIU-2016.2.1.tar.gz \\
@@ -44,7 +45,7 @@ CMD /idea-*/bin/idea.sh
 docker build -t $image $tmpdir
 rm -rf $tmpdir
 
-# this may be run under Java's `Runtime.getRuntime.exec` or from XFCE menu, in this case no `docker -t` nor `docker -t` start
+# this may be run under Java's `Runtime.getRuntime.exec` or from XFCE menu, in this case no `docker -t` nor `docker -i` start
 ti() {
   stty -a >/dev/null
   if [ $? -eq 0 ]; then echo "-ti"; fi

@@ -46,7 +46,7 @@ docker build -t $image $tmpdir
 rm -rf $tmpdir
 
 
-# this may be run under Java's `Runtime.getRuntime.exec` or from XFCE menu, in this case no `docker -t` nor `docker -t` start
+# this may be run under Java's `Runtime.getRuntime.exec` or from XFCE menu, in this case no `docker -t` nor `docker -i` start
 ti() {
   stty -a >/dev/null
   if [ $? -eq 0 ]; then echo "-ti"; fi

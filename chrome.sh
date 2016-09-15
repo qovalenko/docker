@@ -14,17 +14,18 @@ escape_me() {
 echo "FROM ubuntu:14.04
 
 # fonts for low-dpi screens
-RUN apt-get update \\
- && apt-get -y install software-properties-common \\
- && add-apt-repository -y ppa:no1wantdthisname/ppa \\
- && apt-get update; apt-get -y upgrade \\
- && apt-get -y install fontconfig-infinality \\
- && apt-get -y purge software-properties-common \\
- && apt-get -y autoremove \\
- && perl -pi.old -e 's/false/true/ if /<edit name=.antialias./ ... /<.edit/' /etc/fonts/infinality/conf.src/50-base-rendering-win98.conf \\
- && perl -pi.old -e 's/<string>DejaVu Sans<.string>//g'                      /etc/fonts/infinality/conf.src/41-repl-os-win.conf \\
- && sed -i -r 's|USE_STYLE=\"DEFAULT\"|USE_STYLE=\"WINDOWS\"|g' /etc/profile.d/infinality-settings.sh \\
- && /etc/fonts/infinality/infctl.sh setstyle win98
+#infinality is broken https://github.com/bohoomil/fontconfig-ultimate/issues/179
+#RUN apt-get update \\
+# && apt-get -y install software-properties-common \\
+# && add-apt-repository -y ppa:no1wantdthisname/ppa \\
+# && apt-get update; apt-get -y upgrade \\
+# && apt-get -y install fontconfig-infinality \\
+# && apt-get -y purge software-properties-common \\
+# && apt-get -y autoremove \\
+# && perl -pi.old -e 's/false/true/ if /<edit name=.antialias./ ... /<.edit/' /etc/fonts/infinality/conf.src/50-base-rendering-win98.conf \\
+# && perl -pi.old -e 's/<string>DejaVu Sans<.string>//g'                      /etc/fonts/infinality/conf.src/41-repl-os-win.conf \\
+# && sed -i -r 's|USE_STYLE=\"DEFAULT\"|USE_STYLE=\"WINDOWS\"|g' /etc/profile.d/infinality-settings.sh \\
+# && /etc/fonts/infinality/infctl.sh setstyle win98
  
 RUN apt-get -y install wget libpango1.0-0 libxss1 fonts-liberation libappindicator1 libcurl3 xdg-utils libindicator7 libpangox-1.0-0 libpangoxft-1.0-0 gconf-service libasound2 libgconf-2-4 libnspr4 libnss3 \\
  && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \\
@@ -54,7 +55,7 @@ CMD /usr/bin/google-chrome --user-data-dir=${home}/udd \
 docker build -t $image $tmpdir
 rm -rf $tmpdir
 
-# this may be run under Java's `Runtime.getRuntime.exec` or from XFCE menu, in this case no `docker -t` nor `docker -t` start
+# this may be run under Java's `Runtime.getRuntime.exec` or from XFCE menu, in this case no `docker -t` nor `docker -i` start
 ti() {
   stty -a >/dev/null
   if [ $? -eq 0 ]; then echo "-ti"; fi
