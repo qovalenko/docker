@@ -15,9 +15,10 @@ tar cvf $tmpdir/pragmata.tar -C /usr/share/fonts/truetype/pragmata .
 
 echo "FROM ubuntu:16.04
 
+RUN apt-get update
+
 # fonts for low-dpi screens
 #infinality is broken https://github.com/bohoomil/fontconfig-ultimate/issues/179
-#RUN apt-get update \\
 # && apt-get -y install software-properties-common \\
 # && add-apt-repository -y ppa:no1wantdthisname/ppa \\
 # && apt-get update; apt-get -y upgrade \\

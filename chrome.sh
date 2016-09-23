@@ -11,11 +11,11 @@ escape_me() {
   perl -e 'print(join(" ", map { my $x=$_; s/\\/\\\\/g; s/\"/\\\"/g; s/`/\\`/g; s/\$/\\\$/g; s/!/\"\x27!\x27\"/g; ($x ne $_) || /\s/ ? "\"$_\"" : $_ } @ARGV))' "$@"
 }
 
-echo "FROM ubuntu:14.04
+echo "FROM ubuntu:16.04
 
-# fonts for low-dpi screens
-#infinality is broken https://github.com/bohoomil/fontconfig-ultimate/issues/179
-#RUN apt-get update \\
+# fonts for low-dpi screens (see https://github.com/achaphiv/ppa-fonts/issues/29)
+RUN apt-get update
+
 # && apt-get -y install software-properties-common \\
 # && add-apt-repository -y ppa:no1wantdthisname/ppa \\
 # && apt-get update; apt-get -y upgrade \\
@@ -26,7 +26,7 @@ echo "FROM ubuntu:14.04
 # && perl -pi.old -e 's/<string>DejaVu Sans<.string>//g'                      /etc/fonts/infinality/conf.src/41-repl-os-win.conf \\
 # && sed -i -r 's|USE_STYLE=\"DEFAULT\"|USE_STYLE=\"WINDOWS\"|g' /etc/profile.d/infinality-settings.sh \\
 # && /etc/fonts/infinality/infctl.sh setstyle win98
- 
+
 RUN apt-get -y install wget libpango1.0-0 libxss1 fonts-liberation libappindicator1 libcurl3 xdg-utils libindicator7 libpangox-1.0-0 libpangoxft-1.0-0 gconf-service libasound2 libgconf-2-4 libnspr4 libnss3 \\
  && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \\
  && dpkg -i google-chrome-stable_current_amd64.deb \\
@@ -39,8 +39,15 @@ RUN mkdir -p ${home} \\
  && [ -d /etc/sudoers.d ] || (apt-get update && apt-get -y install sudo) \\
  && echo \"${user} ALL=(ALL) NOPASSWD: ALL\"                       > /etc/sudoers.d/${user} \\
  && chmod 0440 /etc/sudoers.d/${user}
+
+#RUN echo export FREETYPE_PROPERTIES=\'truetype:interpreter-version=35\' > /etc/profile.d/freetype2.sh
+
 USER ${user}
 ENV HOME ${home}
+#ENV FREETYPE_PROPERTIES truetype:interpreter-version=35
+#ENV FT2_SUBPIXEL_HINTING 0
+
+#CMD /bin/bash
 
 CMD /usr/bin/google-chrome --user-data-dir=${home}/udd \
   --disable-translate \

@@ -13,9 +13,10 @@ escape_me() {
 
 echo "FROM ubuntu:14.04
 
+RUN apt-get update
+
 # fonts for low-dpi screens
 #infinality is broken https://github.com/bohoomil/fontconfig-ultimate/issues/179
-#RUN apt-get update \\
 # && apt-get -y install software-properties-common \\
 # && add-apt-repository -y ppa:no1wantdthisname/ppa \\
 # && apt-get update; apt-get -y upgrade \\
