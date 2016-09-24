@@ -13,22 +13,20 @@ escape_me() {
 
 tar cvf $tmpdir/pragmata.tar -C /usr/share/fonts/truetype/pragmata .
 
+# use old infinality debs before the hinting regression https://github.com/achaphiv/ppa-fonts/issues/29
+tar cvf $tmpdir/debs.tar fontconfig-infinality_20130104-0ubuntu0ppa1_all.deb libfreetype6_2.6.1-0.1ubuntu2ppa1bohoomil20151108_amd64.deb
+
 echo "FROM ubuntu:16.04
 
-RUN apt-get update
-
-# fonts for low-dpi screens
-#infinality is broken https://github.com/bohoomil/fontconfig-ultimate/issues/179
-# && apt-get -y install software-properties-common \\
-# && add-apt-repository -y ppa:no1wantdthisname/ppa \\
-# && apt-get update; apt-get -y upgrade \\
-# && apt-get -y install fontconfig-infinality \\
-# && apt-get -y purge software-properties-common \\
-# && apt-get -y autoremove \\
-# && perl -pi.old -e 's/false/true/ if /<edit name=.antialias./ ... /<.edit/' /etc/fonts/infinality/conf.src/50-base-rendering-win98.conf \\
-# && perl -pi.old -e 's/<string>DejaVu Sans<.string>//g'                      /etc/fonts/infinality/conf.src/41-repl-os-win.conf \\
-# && sed -i -r 's|USE_STYLE=\"DEFAULT\"|USE_STYLE=\"WINDOWS\"|g' /etc/profile.d/infinality-settings.sh \\
-# && /etc/fonts/infinality/infctl.sh setstyle win98
+ADD debs.tar /
+RUN apt-get update \\
+ && apt-get -y upgrade \\
+ && apt-get -y install libpng12-0 \\
+ && dpkg -i fontconfig-infinality_20130104-0ubuntu0ppa1_all.deb libfreetype6_2.6.1-0.1ubuntu2ppa1bohoomil20151108_amd64.deb \\
+ && perl -pi.old -e 's/false/true/ if /<edit name=.antialias./ ... /<.edit/' /etc/fonts/infinality/conf.src/50-base-rendering-win98.conf \\
+ && perl -pi.old -e 's/<string>DejaVu Sans<.string>//g'                      /etc/fonts/infinality/conf.src/41-repl-os-win.conf \\
+ && sed -i -r 's|USE_STYLE=\"DEFAULT\"|USE_STYLE=\"WINDOWS\"|g' /etc/profile.d/infinality-settings.sh \\
+ && /etc/fonts/infinality/infctl.sh setstyle win98
 
 ADD pragmata.tar /usr/share/fonts/truetype/pragmata
 RUN apt-get -y install fontconfig \\
