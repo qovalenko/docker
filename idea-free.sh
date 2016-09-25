@@ -8,7 +8,7 @@ gid=${uid:-1000}
 tmpdir=$(mktemp -d)
 
 # use old infinality debs before the hinting regression https://github.com/achaphiv/ppa-fonts/issues/29
-tar cvf $tmpdir/debs.tar fontconfig-infinality_20130104-0ubuntu0ppa1_all.deb libfreetype6_2.6.1-0.1ubuntu2ppa1bohoomil20151108_amd64.deb
+tar cvf $tmpdir/debs.tar -C ~/docker fontconfig-infinality_20130104-0ubuntu0ppa1_all.deb libfreetype6_2.6.1-0.1ubuntu2ppa1bohoomil20151108_amd64.deb
 
 echo "FROM ubuntu:16.04
 
