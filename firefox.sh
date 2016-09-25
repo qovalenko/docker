@@ -53,6 +53,7 @@ ti() {
 # start tmp session, firefox: second run will create a new tab in it; chrome: start second container
 # X11 requires /root/.Xauthority, Xrdp requires /tmp/X11-unix
 docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v /home/user/Downloads:/home/user/Downloads \
   --memory=1000mb \
   --rm $image
 

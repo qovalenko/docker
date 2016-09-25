@@ -71,6 +71,7 @@ ti() {
 
 # multimedia
 docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v /home/user/Downloads:/home/user/Downloads \
   -v /dev/dri:/dev/dri \
   -v /dev/snd:/dev/snd \
   --privileged \
