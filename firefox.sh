@@ -19,7 +19,7 @@ echo "FROM ubuntu:16.04
 ADD debs.tar /
 RUN apt-get update \\
  && apt-get -y upgrade \\
- && apt-get -y install libpng12-0 \\
+ && apt-get -y install libpng12-0 fontconfig \\
  && dpkg -i fontconfig-infinality_20130104-0ubuntu0ppa1_all.deb libfreetype6_2.6.1-0.1ubuntu2ppa1bohoomil20151108_amd64.deb \\
  && perl -pi.old -e 's/false/true/ if /<edit name=.antialias./ ... /<.edit/' /etc/fonts/infinality/conf.src/50-base-rendering-win98.conf \\
  && perl -pi.old -e 's/<string>DejaVu Sans<.string>//g'                      /etc/fonts/infinality/conf.src/41-repl-os-win.conf \\
@@ -35,6 +35,7 @@ RUN mkdir -p ${home} \\
  && [ -d /etc/sudoers.d ] || (apt-get update && apt-get -y install sudo) \\
  && echo \"${user} ALL=(ALL) NOPASSWD: ALL\"                       > /etc/sudoers.d/${user} \\
  && chmod 0440 /etc/sudoers.d/${user}
+
 USER ${user}
 ENV HOME ${home}
 

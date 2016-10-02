@@ -28,9 +28,9 @@ RUN apt-get update \\
 
 RUN apt-get -y install wget libpango1.0-0 libxss1 fonts-liberation libappindicator1 libcurl3 xdg-utils libindicator7 libpangox-1.0-0 libpangoxft-1.0-0 gconf-service libasound2 libgconf-2-4 libnspr4 libnss3
 
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \\
- && dpkg -i google-chrome-stable_current_amd64.deb \\
- && rm -f google-chrome-stable_current_amd64.deb
+RUN wget https://downloads.vivaldi.com/stable/vivaldi-stable_1.4.589.29-1_amd64.deb \\
+ && dpkg -i vivaldi-stable_1.4.589.29-1_amd64.deb \\
+ && rm -f vivaldi-stable_1.4.589.29-1_amd64.deb
 
 RUN mkdir -p ${home} \\
  && chown ${uid}:${gid} -R ${home} \\
@@ -43,17 +43,16 @@ RUN mkdir -p ${home} \\
 USER ${user}
 ENV HOME ${home}
 
-#CMD /bin/bash
-
-CMD /usr/bin/google-chrome --user-data-dir=${home}/udd \
-  --disable-translate \
-  --disable-notifications \
-  --disable-sync \
+CMD /usr/bin/vivaldi \
   --disable-smooth-scrolling \
-  --no-default-browser-check \
-  --no-first-run \
-  --disable-gpu \
   $(escape_me "$@")
+  
+#  --user-data-dir=${home}/udd
+#  --disable-translate
+#  --disable-notifications
+#  --disable-sync
+#  --no-default-browser-check
+#  --no-first-run
 " > $tmpdir/Dockerfile
 
 docker build -t $image $tmpdir
