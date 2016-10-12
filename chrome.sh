@@ -24,7 +24,10 @@ RUN apt-get update \\
  && perl -pi.old -e 's/false/true/ if /<edit name=.antialias./ ... /<.edit/' /etc/fonts/infinality/conf.src/50-base-rendering-win98.conf \\
  && perl -pi.old -e 's/<string>DejaVu Sans<.string>//g'                      /etc/fonts/infinality/conf.src/41-repl-os-win.conf \\
  && sed -i -r 's|USE_STYLE=\"DEFAULT\"|USE_STYLE=\"WINDOWS\"|g' /etc/profile.d/infinality-settings.sh \\
- && /etc/fonts/infinality/infctl.sh setstyle win98
+ && /etc/fonts/infinality/infctl.sh setstyle win98 \\
+ && apt-get -y install fontconfig \\
+ && fc-cache -f -v
+
 
 RUN apt-get -y install wget libpango1.0-0 libxss1 fonts-liberation libappindicator1 libcurl3 xdg-utils libindicator7 libpangox-1.0-0 libpangoxft-1.0-0 gconf-service libasound2 libgconf-2-4 libnspr4 libnss3
 
@@ -77,6 +80,7 @@ ti() {
 
 # multimedia
 docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v /usr/share/fonts:/usr/share/fonts:ro \
   -v /home/user/Downloads:/home/user/Downloads \
   -v /dev/dri:/dev/dri \
   -v /dev/snd:/dev/snd \

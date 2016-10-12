@@ -20,7 +20,9 @@ RUN apt-get update \\
  && perl -pi.old -e 's/false/true/ if /<edit name=.antialias./ ... /<.edit/' /etc/fonts/infinality/conf.src/50-base-rendering-win98.conf \\
  && perl -pi.old -e 's/<string>DejaVu Sans<.string>//g'                      /etc/fonts/infinality/conf.src/41-repl-os-win.conf \\
  && sed -i -r 's|USE_STYLE=\"DEFAULT\"|USE_STYLE=\"WINDOWS\"|g' /etc/profile.d/infinality-settings.sh \\
- && /etc/fonts/infinality/infctl.sh setstyle win98
+ && /etc/fonts/infinality/infctl.sh setstyle win98 \\
+ && apt-get -y install fontconfig \\
+ && fc-cache -f -v
 
 RUN apt-get -y install xterm wget \\
  && wget https://download-cf.jetbrains.com/idea/ideaIU-2016.2.1.tar.gz \\
@@ -51,5 +53,6 @@ ti() {
 }
 
 docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v /usr/share/fonts:/usr/share/fonts:ro \
   --memory=2000mb \
   --rm $image

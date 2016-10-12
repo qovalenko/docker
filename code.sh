@@ -11,7 +11,7 @@ escape_me() {
   perl -e 'print(join(" ", map { my $x=$_; s/\\/\\\\/g; s/\"/\\\"/g; s/`/\\`/g; s/\$/\\\$/g; s/!/\"\x27!\x27\"/g; ($x ne $_) || /\s/ ? "\"$_\"" : $_ } @ARGV))' "$@"
 }
 
-tar cvf $tmpdir/pragmata.tar -C /usr/share/fonts/truetype/pragmata .
+#tar cvf $tmpdir/pragmata.tar -C /usr/share/fonts/truetype/pragmata .
 
 # use old infinality debs before the hinting regression https://github.com/achaphiv/ppa-fonts/issues/29
 tar cvf $tmpdir/debs.tar -C ~/docker fontconfig-infinality_20130104-0ubuntu0ppa1_all.deb libfreetype6_2.6.1-0.1ubuntu2ppa1bohoomil20151108_amd64.deb
@@ -26,11 +26,13 @@ RUN apt-get update \\
  && perl -pi.old -e 's/false/true/ if /<edit name=.antialias./ ... /<.edit/' /etc/fonts/infinality/conf.src/50-base-rendering-win98.conf \\
  && perl -pi.old -e 's/<string>DejaVu Sans<.string>//g'                      /etc/fonts/infinality/conf.src/41-repl-os-win.conf \\
  && sed -i -r 's|USE_STYLE=\"DEFAULT\"|USE_STYLE=\"WINDOWS\"|g' /etc/profile.d/infinality-settings.sh \\
- && /etc/fonts/infinality/infctl.sh setstyle win98
-
-ADD pragmata.tar /usr/share/fonts/truetype/pragmata
-RUN apt-get -y install fontconfig \\
+ && /etc/fonts/infinality/infctl.sh setstyle win98 \\
+ && apt-get -y install fontconfig \\
  && fc-cache -f -v
+
+#ADD pragmata.tar /usr/share/fonts/truetype/pragmata
+#RUN apt-get -y install fontconfig \\
+# && fc-cache -f -v
 
 # https://github.com/nodesource/docker-node/blob/master/base/ubuntu/xenial/Dockerfile
 RUN apt-get update \
@@ -78,6 +80,7 @@ rm -rf $tmpdir
 docker run -ti -e DISPLAY --net=host \
   -v $HOME/.Xauthority:${home}/.Xauthority:ro \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v /usr/share/fonts:/usr/share/fonts:ro \
   -v "$(pwd)":"$(pwd)" \
   -v ${home}/node_modules:${home}/node_modules:ro \
   -v ${home}/vscode:${home}/vscode \

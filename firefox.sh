@@ -24,7 +24,9 @@ RUN apt-get update \\
  && perl -pi.old -e 's/false/true/ if /<edit name=.antialias./ ... /<.edit/' /etc/fonts/infinality/conf.src/50-base-rendering-win98.conf \\
  && perl -pi.old -e 's/<string>DejaVu Sans<.string>//g'                      /etc/fonts/infinality/conf.src/41-repl-os-win.conf \\
  && sed -i -r 's|USE_STYLE=\"DEFAULT\"|USE_STYLE=\"WINDOWS\"|g' /etc/profile.d/infinality-settings.sh \\
- && /etc/fonts/infinality/infctl.sh setstyle win98
+ && /etc/fonts/infinality/infctl.sh setstyle win98 \\
+ && apt-get -y install fontconfig \\
+ && fc-cache -f -v
 
 RUN apt-get -y install firefox
 
@@ -54,6 +56,7 @@ ti() {
 # start tmp session, firefox: second run will create a new tab in it; chrome: start second container
 # X11 requires /root/.Xauthority, Xrdp requires /tmp/X11-unix
 docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v /usr/share/fonts:/usr/share/fonts:ro \
   -v /home/user/Downloads:/home/user/Downloads \
   --memory=1000mb \
   --rm $image
