@@ -28,9 +28,12 @@ RUN apt-get update \\
 
 RUN apt-get -y install wget libpango1.0-0 libxss1 fonts-liberation libappindicator1 libcurl3 xdg-utils libindicator7 libpangox-1.0-0 libpangoxft-1.0-0 gconf-service libasound2 libgconf-2-4 libnspr4 libnss3
 
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \\
- && dpkg -i google-chrome-stable_current_amd64.deb \\
- && rm -f google-chrome-stable_current_amd64.deb
+#RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \\
+# && dpkg -i google-chrome-stable_current_amd64.deb \\
+# && rm -f google-chrome-stable_current_amd64.deb
+
+RUN apt-get -y install chromium-browser kmod dbus-x11
+
 
 RUN mkdir -p ${home} \\
  && chown ${uid}:${gid} -R ${home} \\
@@ -43,9 +46,10 @@ RUN mkdir -p ${home} \\
 USER ${user}
 ENV HOME ${home}
 
-#CMD /bin/bash
+#CMD /usr/bin/google-chrome
 
-CMD /usr/bin/google-chrome --user-data-dir=${home}/udd \
+CMD /usr/bin/chromium-browser \
+  --user-data-dir=${home}/udd \
   --disable-translate \
   --disable-notifications \
   --disable-sync \
