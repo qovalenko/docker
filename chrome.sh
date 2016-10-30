@@ -31,11 +31,11 @@ RUN apt-get update \\
 
 RUN apt-get -y install wget libpango1.0-0 libxss1 fonts-liberation libappindicator1 libcurl3 xdg-utils libindicator7 libpangox-1.0-0 libpangoxft-1.0-0 gconf-service libasound2 libgconf-2-4 libnspr4 libnss3
 
-#RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \\
-# && dpkg -i google-chrome-stable_current_amd64.deb \\
-# && rm -f google-chrome-stable_current_amd64.deb
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \\
+ && dpkg -i google-chrome-stable_current_amd64.deb \\
+ && rm -f google-chrome-stable_current_amd64.deb
 
-RUN apt-get -y install chromium-browser kmod dbus-x11
+#RUN apt-get -y install chromium-browser kmod dbus-x11
 
 
 RUN mkdir -p ${home} \\
@@ -49,11 +49,9 @@ RUN mkdir -p ${home} \\
 USER ${user}
 ENV HOME ${home}
 
-#CMD /usr/bin/google-chrome
 
-CMD /usr/bin/chromium-browser \
-  --user-data-dir=${home}/udd \
-  --disable-translate \
+CMD \$(if [ -f /usr/bin/chromium-browser ]; then echo "/usr/bin/chromium-browser"; else echo "/usr/bin/google-chrome"; fi) \
+  --user-data-dir=/tmp \
   --disable-notifications \
   --disable-sync \
   --disable-smooth-scrolling \
@@ -79,8 +77,8 @@ ti() {
 #  --rm $image
 
 # multimedia
+#  -v /usr/share/fonts:/usr/share/fonts:ro  (slow start)
 docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
-  -v /usr/share/fonts:/usr/share/fonts:ro \
   -v /home/user/Downloads:/home/user/Downloads \
   -v /dev/dri:/dev/dri \
   -v /dev/snd:/dev/snd \
