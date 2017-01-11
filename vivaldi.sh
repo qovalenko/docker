@@ -28,9 +28,9 @@ RUN apt-get update \\
 
 RUN apt-get -y install wget libpango1.0-0 libxss1 fonts-liberation libappindicator1 libcurl3 xdg-utils libindicator7 libpangox-1.0-0 libpangoxft-1.0-0 gconf-service libasound2 libgconf-2-4 libnspr4 libnss3
 
-RUN wget https://downloads.vivaldi.com/stable/vivaldi-stable_1.4.589.29-1_amd64.deb \\
- && dpkg -i vivaldi-stable_1.4.589.29-1_amd64.deb \\
- && rm -f vivaldi-stable_1.4.589.29-1_amd64.deb
+RUN wget https://downloads.vivaldi.com/stable/vivaldi-stable_1.6.689.46-1_amd64.deb \\
+ && dpkg -i vivaldi-*.deb \\
+ && rm -f vivaldi-*.deb
 
 RUN mkdir -p ${home} \\
  && chown ${uid}:${gid} -R ${home} \\
@@ -45,14 +45,14 @@ ENV HOME ${home}
 
 CMD /usr/bin/vivaldi \
   --disable-smooth-scrolling \
+  --user-data-dir=/tmp \
+  --disable-notifications \
+  --disable-sync \
+  --disable-smooth-scrolling \
+  --no-default-browser-check \
+  --no-first-run \
+  --disable-gpu \
   $(escape_me "$@")
-  
-#  --user-data-dir=${home}/udd
-#  --disable-translate
-#  --disable-notifications
-#  --disable-sync
-#  --no-default-browser-check
-#  --no-first-run
 " > $tmpdir/Dockerfile
 
 docker build -t $image $tmpdir
@@ -72,7 +72,6 @@ ti() {
 
 # multimedia
 docker run $(ti) -e DISPLAY --net=host -v $HOME/.Xauthority:${home}/.Xauthority:ro -v /tmp/.X11-unix:/tmp/.X11-unix \
-  -v /usr/share/fonts:/usr/share/fonts:ro \
   -v /home/user/Downloads:/home/user/Downloads \
   -v /dev/dri:/dev/dri \
   -v /dev/snd:/dev/snd \
