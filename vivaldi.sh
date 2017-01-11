@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 image=$(basename $0 .sh)
 user=${USER:-root}
@@ -12,7 +12,7 @@ escape_me() {
 }
 
 # use old infinality debs before the hinting regression https://github.com/achaphiv/ppa-fonts/issues/29
-tar cvf $tmpdir/debs.tar -C ~/docker fontconfig-infinality_20130104-0ubuntu0ppa1_all.deb libfreetype6_2.6.1-0.1ubuntu2ppa1bohoomil20151108_amd64.deb
+tar cvf $tmpdir/debs.tar -C ~/docker fontconfig-infinality_20130104-0ubuntu0ppa1_all.deb
 
 echo "FROM ubuntu:16.04
 
@@ -20,13 +20,11 @@ ADD debs.tar /
 RUN apt-get update \\
  && apt-get -y upgrade \\
  && apt-get -y install libpng12-0 fontconfig \\
- && dpkg -i fontconfig-infinality_20130104-0ubuntu0ppa1_all.deb libfreetype6_2.6.1-0.1ubuntu2ppa1bohoomil20151108_amd64.deb \\
+ && dpkg -i fontconfig-infinality_20130104-0ubuntu0ppa1_all.deb \\
  && perl -pi.old -e 's/false/true/ if /<edit name=.antialias./ ... /<.edit/' /etc/fonts/infinality/conf.src/50-base-rendering-win98.conf \\
  && perl -pi.old -e 's/<string>DejaVu Sans<.string>//g'                      /etc/fonts/infinality/conf.src/41-repl-os-win.conf \\
- && sed -i -r 's|USE_STYLE=\"DEFAULT\"|USE_STYLE=\"WINDOWS\"|g' /etc/profile.d/infinality-settings.sh \\
- && /etc/fonts/infinality/infctl.sh setstyle win98 \\
- && apt-get -y install fontconfig \\
- && fc-cache -f -v
+ && /etc/fonts/infinality/infctl.sh setstyle win98
+
 
 RUN apt-get -y install wget libpango1.0-0 libxss1 fonts-liberation libappindicator1 libcurl3 xdg-utils libindicator7 libpangox-1.0-0 libpangoxft-1.0-0 gconf-service libasound2 libgconf-2-4 libnspr4 libnss3
 
