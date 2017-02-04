@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 image=$(basename $0 .sh)
 user=${USER:-root}

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Old Firefox with JRE 6 for managing HP servers
 # https://www.reddit.com/r/linuxquestions/comments/2oebqn/problems_using_ilo_java_interface_with_java_7_and/
